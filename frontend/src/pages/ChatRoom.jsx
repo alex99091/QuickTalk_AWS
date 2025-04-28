@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useWebSocket from "../services/useWebSocket";
 import MessageList from "../components/MessageList";
 import MessageInput from "../components/MessageInput";
 import TypingIndicator from "../components/TypingIndicator";
@@ -8,35 +9,38 @@ function ChatRoom() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { nickname: passedNickname, roomTitle } = location.state || {};
-    const [nickname] = useState(passedNickname || `익명${Math.floor(Math.random() * 10000)}`);
+    const rawNickname = location.state?.nickname?.trim();
+    const [nickname] = useState(rawNickname ? rawNickname : `익명${Math.floor(Math.random() * 10000)}`);
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
 
+    const { sendMessage } = useWebSocket("ws://localhost:8080/ws/chat", (data) => {
+        if (data.type === "message") {
+            setMessages(prev => [...prev, { sender: data.sender, text: data.text }]);
+        } else if (data.type === "typing") {
+            setIsTyping(true);
+            setTimeout(() => setIsTyping(false), 1000);
+        }
+    });
+
     const handleSendMessage = (newMessage) => {
         if (newMessage.trim()) {
-            setMessages((prev) => [...prev, { sender: nickname, text: newMessage }]);
+            sendMessage({ type: "message", sender: nickname, text: newMessage });
         }
     };
 
     const handleTyping = () => {
-        setIsTyping(true);
-        setTimeout(() => setIsTyping(false), 1000); // 1초 동안 "입력중" 표시
+        sendMessage({ type: "typing", sender: nickname });
     };
 
     const handleLeave = () => {
-        // 홈으로 이동할 때 nickname은 남아있게 (따로 초기화 안함)
-        navigate("/", { state: { nickname } });
+        navigate("/");
     };
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col p-4">
-            {/* 상단 타이틀 */}
             <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-blue-600">{roomTitle || "채팅방"}</h2>
-                    <p className="text-sm text-gray-500">- {nickname}</p>
-                </div>
+                <h2 className="text-xl font-bold text-blue-600">채팅방 - {nickname}</h2>
                 <button
                     onClick={handleLeave}
                     className="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-500"
@@ -45,15 +49,12 @@ function ChatRoom() {
                 </button>
             </div>
 
-            {/* 메시지 리스트 */}
             <div className="flex-1 overflow-y-auto mb-4 bg-white rounded shadow p-4">
                 <MessageList messages={messages} />
             </div>
 
-            {/* 입력중 표시 */}
-            {isTyping && <TypingIndicator nickname={nickname} />}
+            {isTyping && <TypingIndicator nickname="상대방" />}
 
-            {/* 입력창 */}
             <MessageInput onSend={handleSendMessage} onTyping={handleTyping} />
         </div>
     );
