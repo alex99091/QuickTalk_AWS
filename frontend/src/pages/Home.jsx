@@ -49,16 +49,24 @@ function Home() {
     };
 
     const handleJoinRoom = (roomId) => {
-        if (!nickname.trim()) {
-            alert("닉네임을 먼저 설정하세요!");
-            return;
+        let finalNickname = nickname.trim();
+
+        if (!finalNickname) {
+            finalNickname = `익명${Math.floor(Math.random() * 10000)}`;
+            setNickname(finalNickname);
         }
+
+        const room = chatRooms.find(r => r.id === roomId);
+
         setChatRooms(prevRooms =>
             prevRooms.map(room =>
                 room.id === roomId ? { ...room, currentUsers: room.currentUsers + 1 } : room
             )
         );
-        navigate(`/chat/${roomId}`, { state: { nickname } });
+
+        navigate(`/chat/${roomId}`, {
+            state: { nickname: finalNickname, roomTitle: room?.title || "채팅방" }
+        });
     };
 
     return (
