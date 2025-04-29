@@ -66,19 +66,18 @@ const useWebSocket = (roomId, nickname) => {
 
   const sendMessage = (text) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      console.log("🔵 [전송 전] 메시지 내용:", { text });
-
-      socketRef.current.send(JSON.stringify({
-        type: "MESSAGE",
-        roomId,
-        sender: nickname,
-        message: text,
-      }));
-    } else {
-      console.log("❌ 소켓이 열려있지 않음");
+      const payload = {
+        id: chatInfo.id || 'anonymous',
+        name: chatInfo.name || '익명',
+        roomNumber: chatInfo.roomNumber || '❌실패', // 여기에 'default'가 나오면 chatInfo 문제!
+        content: text,
+        type: 'MESSAGE',
+      };
+      console.log('📤 보내는 메시지:', payload);
+      socketRef.current.send(JSON.stringify(payload));
     }
   };
-
+  
   const sendTyping = () => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       console.log("🟣 [입력중 알림 전송]");

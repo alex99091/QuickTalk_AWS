@@ -45,25 +45,37 @@ function Home() {
         setNewTitle('');
         setNewMaxUsers(5);
 
-        navigate(`/chat/${newRoomId}`, { state: { nickname } });
+        navigate(`/chat/${newRoomId}`, {
+            state: {
+              roomId: newRoomId,
+              roomTitle: newTitle,
+              nickname: nickname.trim() || `익명${Math.floor(Math.random() * 10000)}`
+            }
+        });
     };
 
-    const handleJoinRoom = (roomId) => {
+    const handleJoinRoom = (room) => {
         let finalNickname = nickname.trim();
         if (!finalNickname) {
-            
-            finalNickname = `익명${Math.floor(Math.random() * 10000)}`;
+          finalNickname = `익명${Math.floor(Math.random() * 10000)}`;
+          setNickname(finalNickname);
         }
-    
+      
         setChatRooms(prevRooms =>
-            prevRooms.map(room =>
-                room.id === roomId ? { ...room, currentUsers: room.currentUsers + 1 } : room
-            )
+          prevRooms.map(r =>
+            r.id === room.id ? { ...r, currentUsers: r.currentUsers + 1 } : r
+          )
         );
-        navigate(`/chat/${roomId}`, { state: { nickname: finalNickname } });
-    };
-    
-
+      
+        navigate(`/chat/${room.id}`, {
+          state: {
+            roomId: room.id,
+            roomTitle: room.title,
+            nickname: finalNickname
+          }
+        });
+      };
+              
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
             <h1 className="text-4xl font-bold text-blue-600 mb-8">QuickTalk - 랜덤채팅</h1>
@@ -74,7 +86,7 @@ function Home() {
                     <ChatRoomCard
                         key={room.id}
                         room={room}
-                        onJoin={() => handleJoinRoom(room.id)}
+                        onJoin={() => handleJoinRoom(room)}
                     />
                 ))}
             </div>
