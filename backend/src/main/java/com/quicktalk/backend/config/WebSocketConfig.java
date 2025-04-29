@@ -1,6 +1,6 @@
 package com.quicktalk.backend.config;
 
-import com.quicktalk.backend.websocket.ChatWebSocketHandler;
+import com.quicktalk.backend.handler.ChatWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.*;
 
@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatWebSocketHandler, "/ws/chat")
-                .setAllowedOrigins("*"); // CORS 허용
+        registry.addHandler(chatWebSocketHandler, "/ws")
+                .setAllowedOrigins("*"); // 프론트와 통신 허용 (CORS 에러 방지)
     }
 }

@@ -5,13 +5,16 @@ function MessageInput({ onSend, onTyping }) {
 
     const handleChange = (e) => {
         setInput(e.target.value);
-        onTyping();
+        if (typeof onTyping === 'function') {
+            onTyping(); // 안전하게 호출
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (input.trim()) {
-            onSend(input);
+        const trimmed = input.trim();
+        if (trimmed) {
+            onSend(trimmed); // 실제 메시지 전송
             setInput("");
         }
     };
