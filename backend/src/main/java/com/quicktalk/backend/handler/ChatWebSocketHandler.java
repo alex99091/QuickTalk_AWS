@@ -2,6 +2,8 @@ package com.quicktalk.backend.handler;
 
 import com.quicktalk.backend.dto.MessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quicktalk.backend.producer.ChatKafkaProducer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -11,10 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final ChatKafkaProducer chatKafkaProducer;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
