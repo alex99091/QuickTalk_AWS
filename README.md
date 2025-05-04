@@ -7,15 +7,15 @@
 
 ## ✨ 프로젝트 개요
 
-QuickTalk은 **React + Spring Boot + Python NLP + Kafka + MongoDB** 조합으로 구성된 **실시간 익명 채팅 시스템**입니다. EC2, Docker Compose를 활용한 클라우드 기반의 완전한 배포 경험을 제공하며, 다음을 실현합니다:
+QuickTalk은 **React + Spring Boot + Python NLP + Kafka + MongoDB** 조합으로 구성된 **실시간 익명 채팅 시스템**입니다. EC2, Docker Compose를 활용한 클라우드 기반의 배포 경험을 제공하며, 다음을 실현합니다:
 
 * 실시간 랜덤 사용자 매칭 및 채팅 기능
 * AWS EC2 서버 구축
 * Docker & Docker Compose 환경 구성
 * Kafka 메시지 큐 통합
 * MongoDB를 통한 채팅 기록 저장
-* GitHub Actions 기반 CI/CD 자동화
 * Python NLP 연동 준비 구조 구현
+* (GitHub Actions 기반 CI/CD 자동화 -- 예정)
 
 > 본 문서는 실제 EC2 배포 및 문제 해결 경험을 바탕으로 작성되었습니다.
 
@@ -55,7 +55,9 @@ Docker는 **컨테이너 기반 가상화 플랫폼**입니다. 애플리케이�
 
 ### ✅ Dockerfile이란?
 
-Docker 이미지를 만들기 위한 **설정 파일**입니다. 어떤 OS를 쓸지, 어떤 패키지를 설치할지, 어떤 명령어를 실행할지 등의 내용이 포함됩니다.
+Docker 이미지를 만들기 위한 **설정 파일**입니다. 어떤 OS를 쓸지, 어떤 패키지를 설치할지, 어떤 명령어를 실행할지 등의 내용이 포함됩니다.  
+  
+본 프로젝트는 backend, frontend, nlp-service의 각각 dockerfile을 생성하였습니다.  
 
 예시:
 
@@ -79,13 +81,13 @@ CMD ["npm", "run", "dev"]
 
 ```plaintext
 ┌────────────────────┐
-│  사용자 브라우저    │
+│  사용자 브라우저       │
 │ (React + WebSocket)│
 └────────┬───────────┘
          │ 실시간 메시지 송신
          ▼
 ┌────────────────────┐
-│  Spring Boot 백엔드 │
+│ Spring Boot 백엔드   │
 │ (WebSocket 처리)    │
 └────────┬───────────┘
          │ Kafka Producer
@@ -96,13 +98,13 @@ CMD ["npm", "run", "dev"]
          │ Kafka Consumer
          ▼
 ┌────────────────────┐       ┌────────────────────┐
-│ MongoDB (저장소)    │◀──────┤ NLP 서비스 (Python) │
+│ MongoDB (저장소)     │◀──────┤ NLP 서비스 (Python) │
 └────────────────────┘       └────────────────────┘
          ▲
          │ WebSocket 응답 전달
          ▼
 ┌────────────────────┐
-│ 사용자 브라우저로 응답 │
+│ 사용자 브라우저로 응답   │
 └────────────────────┘
 ```
 
@@ -311,4 +313,4 @@ nlp-service/
 
 ---
 
-> 🚀 AWS 클라우드 배포 과정에서의 시행착오와 해결 과정을 생생하게 담고 있습니다. 도움이 되셨다면 Star로 함께 성장해요!
+> 🚀 AWS 클라우드 배포 과정에서의 시행착오와 해결 과정을 담고 있습니다.
