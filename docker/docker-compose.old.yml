@@ -11,26 +11,10 @@ services:
       - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
 
-  backend:
-    build: ../backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      - kafka
-
-  frontend:
-    build: ../frontend
-    ports:
-      - "3000:3000"
-
-  nlp-service:
-    build: ../nlp-service
-    ports:
-      - "5000:5000"
